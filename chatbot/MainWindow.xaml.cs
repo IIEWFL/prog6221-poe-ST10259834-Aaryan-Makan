@@ -9,22 +9,33 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 
+
+
+// Code Attributions:
+// - W3Schools (https://www.w3schools.com) - General guidance on XAML layout and C# event handling.
+// - Microsoft Docs (https://docs.microsoft.com) - References for WPF controls, threading, and exception handling.
+// - Stack Overflow (https://stackoverflow.com) - Solutions for regex pattern matching and list manipulation.
+// - Pygame Documentation (https://www.pygame.org/docs) - Inspiration for audio handling with SoundPlayer.
+// - GitHub Repositories (https://github.com) - Examples of task management UI design in WPF applications.
+// - Mozilla Developer Network (https://developer.mozilla.org) - Insights on UI responsiveness and styling.
+
+
 namespace chatbot
 {
     public partial class MainWindow : Window
     {
         enum ChatStage { Greeting, AskName, AskMood, Ready }
-        ChatStage stage = ChatStage.Greeting;
+        ChatStage stage = ChatStage.Greeting; // Defines the conversation stages: starts at Greeting to welcome users.
 
-        private List<string> activityLog = new List<string>();
-        private List<(string title, string description, DateTime reminderDate, bool hasReminder, bool completed)> tasks = new List<(string, string, DateTime, bool, bool)>();
-        private string lastKeyword = "";
-        private string userInterest = "";
-        private bool quizActive = false;
-        private int quizIndex = 0, quizScore = 0;
-        private string userAlias = "Cyber Cadet";
+        private List<string> activityLog = new List<string>(); // Stores up to 10 recent actions for the activity log feature.
+        private List<(string title, string description, DateTime reminderDate, bool hasReminder, bool completed)> tasks = new List<(string, string, DateTime, bool, bool)>(); // Holds task data with title, description, reminder date, and completion status.
+        private string lastKeyword = ""; // Tracks the last cybersecurity topic discussed for context.
+        private string userInterest = ""; // Records the user's preferred cybersecurity topic.
+        private bool quizActive = false; // Tracks whether a quiz is in progress.
+        private int quizIndex = 0, quizScore = 0; // Manages quiz question index and user score.
+        private string userAlias = "Cyber Cadet"; // Default username, updated when user provides their name.
 
-        private DispatcherTimer reminderTimer = new DispatcherTimer();
+        private DispatcherTimer reminderTimer = new DispatcherTimer(); // Timer to check for overdue tasks every 5 seconds.
 
         private Dictionary<string, List<string>> keywordResponses = new Dictionary<string, List<string>>
         {
@@ -60,7 +71,7 @@ namespace chatbot
             }
         };
 
-        private Dictionary<string, int> responseIndex = new Dictionary<string, int>();
+        private Dictionary<string, int> responseIndex = new Dictionary<string, int>(); // Keeps track of the current tip index for each keyword topic.
 
         private List<(string question, string[] options, int correctAnswerIndex, bool isTrueFalse, string explanation)> quizQuestions = new List<(string, string[], int, bool, string)>
         {
@@ -78,44 +89,44 @@ namespace chatbot
 
         public MainWindow()
         {
-            InitializeComponent(); // Start of app setup - loads the UI from XAML.
-            reminderTimer.Interval = TimeSpan.FromSeconds(5); // Sets reminder check every 5 seconds.
-            reminderTimer.Tick += ReminderTimer_Tick; // Links timer to reminder function.
-            reminderTimer.Start(); // Starts the reminder timer.
+            InitializeComponent(); // Initializes the app by loading the user interface from the XAML file, setting up the window and controls.
+            reminderTimer.Interval = TimeSpan.FromSeconds(5); // Configures the reminder timer to check for due tasks every 5 seconds for timely notifications.
+            reminderTimer.Tick += ReminderTimer_Tick; // Attaches the ReminderTimer_Tick method to handle reminder checks when the timer ticks.
+            reminderTimer.Start(); // Activates the timer to begin monitoring task reminders.
 
-            ShowIntro(); // Displays the intro ASCII art and welcome message.
-            PlayStartupSound(); // Plays the welcome sound if "greeting.wav" is in Assets folder.
-            stage = ChatStage.AskName; // Moves to asking for user's name.
-            AppendText("👋 What is your name?\n(Please type your name below)"); // Prompts user for name.
-            UpdateTaskList(); // Initializes the task list display.
+            ShowIntro(); // Triggers the display of a fun ASCII art logo and a welcoming message to engage the user right away.
+            PlayStartupSound(); // Attempts to play a welcome sound file named "greeting.wav" from the Assets folder, adding an audio cue if available.
+            stage = ChatStage.AskName; // Transitions the conversation state to ask the user for their name after the intro.
+            AppendText("👋 What is your name?\n(Please type your name below)"); // Prompts the user to enter their name in the text box with a friendly emoji.
+            UpdateTaskList(); // Initializes the task list display in the GUI to ensure it’s empty and ready for new tasks.
         } // End MainWindow constructor
 
-        private async void SendButton_Click(object sender, RoutedEventArgs e) => await ProcessInput(); // Triggers input processing when Send button is clicked.
-        private async void UserInputTextBox_KeyDown(object sender, KeyEventArgs e) { if (e.Key == Key.Enter) await ProcessInput(); } // Allows Enter key to send input.
-        private void AddTaskButton_Click(object sender, RoutedEventArgs e) => AddTaskFromGUI(); // Adds task via GUI button.
-        private void CompleteTaskButton_Click(object sender, RoutedEventArgs e) => CompleteTaskFromGUI(); // Marks task complete via GUI.
-        private void DeleteTaskButton_Click(object sender, RoutedEventArgs e) => DeleteTaskFromGUI(); // Deletes task via GUI.
-        private void StartQuizButton_Click(object sender, RoutedEventArgs e) => StartQuiz(); // Starts quiz via GUI button.
-        private void ShowLogButton_Click(object sender, RoutedEventArgs e) => ShowActivityLog(); // Shows log via GUI button.
-        private void TaskTitleTextBox_GotFocus(object sender, RoutedEventArgs e) { if (TaskTitleTextBox.Text == "Task Title") TaskTitleTextBox.Text = ""; } // Clears task title placeholder.
-        private void TaskDescriptionTextBox_GotFocus(object sender, RoutedEventArgs e) { if (TaskDescriptionTextBox.Text == "Task Description") TaskDescriptionTextBox.Text = ""; } // Clears task description placeholder.
+        private async void SendButton_Click(object sender, RoutedEventArgs e) => await ProcessInput(); // Asynchronously triggers the ProcessInput method when the Send button is clicked, handling user input.
+        private async void UserInputTextBox_KeyDown(object sender, KeyEventArgs e) { if (e.Key == Key.Enter) await ProcessInput(); } // Allows users to send input by pressing the Enter key, enhancing keyboard accessibility.
+        private void AddTaskButton_Click(object sender, RoutedEventArgs e) => AddTaskFromGUI(); // Calls the AddTaskFromGUI method when the Add Task button is clicked in the GUI.
+        private void CompleteTaskButton_Click(object sender, RoutedEventArgs e) => CompleteTaskFromGUI(); // Invokes the CompleteTaskFromGUI method when the Complete button is pressed.
+        private void DeleteTaskButton_Click(object sender, RoutedEventArgs e) => DeleteTaskFromGUI(); // Executes the DeleteTaskFromGUI method when the Delete button is clicked.
+        private void StartQuizButton_Click(object sender, RoutedEventArgs e) => StartQuiz(); // Launches the quiz feature when the Start Quiz button is activated.
+        private void ShowLogButton_Click(object sender, RoutedEventArgs e) => ShowActivityLog(); // Displays the activity log when the Show Log button is selected.
+        private void TaskTitleTextBox_GotFocus(object sender, RoutedEventArgs e) { if (TaskTitleTextBox.Text == "Task Title") TaskTitleTextBox.Text = ""; } // Clears the "Task Title" placeholder text when the user clicks into the field.
+        private void TaskDescriptionTextBox_GotFocus(object sender, RoutedEventArgs e) { if (TaskDescriptionTextBox.Text == "Task Description") TaskDescriptionTextBox.Text = ""; } // Removes the "Task Description" placeholder when the user focuses on that field.
 
         private async Task ProcessInput()
         {
-            string input = UserInputTextBox.Text.Trim(); // Gets and cleans user input.
-            if (string.IsNullOrWhiteSpace(input)) return; // Exits if input is empty.
-            AppendText("You: " + input); // Shows user input in chat.
-            UserInputTextBox.Clear(); // Clears input box.
+            string input = UserInputTextBox.Text.Trim(); // Captures the user’s input from the text box and removes leading/trailing spaces.
+            if (string.IsNullOrWhiteSpace(input)) return; // Exits the method if the input is empty or just whitespace to avoid processing nothing.
+            AppendText("You: " + input); // Displays the user’s input in the chat history with a "You:" prefix for clarity.
+            UserInputTextBox.Clear(); // Empties the input box after processing to prepare for the next command.
 
-            if (stage == ChatStage.AskName) // Handles name input stage.
+            if (stage == ChatStage.AskName) // Manages the initial name input phase of the conversation.
             {
-                userAlias = input; // Sets user alias.
-                AppendText("Welcome aboard, " + userAlias + "!"); // Greets user by name.
-                stage = ChatStage.AskMood; // Moves to mood stage.
-                AppendText("How are you doing today?"); // Asks about mood.
+                userAlias = input; // Assigns the user’s input as their alias for personalized responses.
+                AppendText("Welcome aboard, " + userAlias + "!"); // Greets the user by their chosen name with a warm message.
+                stage = ChatStage.AskMood; // Advances the conversation to the mood-checking stage.
+                AppendText("How are you doing today?"); // Asks the user about their mood to tailor the next response.
                 return;
             }
-            else if (stage == ChatStage.AskMood) // Handles mood input stage.
+            else if (stage == ChatStage.AskMood) // Handles the mood input phase with context-aware replies.
             {
                 if (input.Contains("good") || input.Contains("great"))
                     AppendText("That's great to hear! Let's dive into some cybersecurity tips to keep you safe online!");
@@ -128,12 +139,12 @@ namespace chatbot
                 else
                     AppendText("Got it! Let's explore some cybersecurity topics to keep you informed and secure.");
 
-                stage = ChatStage.Ready; // Moves to ready stage.
-                ShowTopicOptions(); // Displays topic and guide options.
+                stage = ChatStage.Ready; // Moves to the ready state where full functionality is unlocked.
+                ShowTopicOptions(); // Presents the user with topic choices and a guide to explore features.
                 return;
             }
 
-            if (quizActive) // Handles quiz answers.
+            if (quizActive) // Processes quiz answers if a quiz is active.
             {
                 ProcessQuizAnswer(input);
                 return;
@@ -153,7 +164,7 @@ namespace chatbot
             string intent = intents.Keys.FirstOrDefault(k => input.ToLower().Contains(k)) ??
                             intents.FirstOrDefault(kvp => kvp.Value.Any(syn => input.ToLower().Contains(syn))).Key;
 
-            if (intent == "add task" || intents["add task"].Any(syn => input.ToLower().Contains(syn))) // Adds a new task.
+            if (intent == "add task" || intents["add task"].Any(syn => input.ToLower().Contains(syn))) // Processes commands to add a new task.
             {
                 string title = "", description = "No description.", reminderText = "";
                 int days = 0;
@@ -222,13 +233,13 @@ namespace chatbot
                 return;
             }
 
-            if (intent == "show tasks" || intents["show tasks"].Any(syn => input.ToLower().Contains(syn))) // Displays all tasks.
+            if (intent == "show tasks" || intents["show tasks"].Any(syn => input.ToLower().Contains(syn))) // Displays the current list of tasks.
             {
                 ShowTasks();
                 return;
             }
 
-            if (intent == "complete task" || intents["complete task"].Any(syn => input.ToLower().Contains(syn))) // Marks a task as complete.
+            if (intent == "complete task" || intents["complete task"].Any(syn => input.ToLower().Contains(syn))) // Marks a specified task as completed.
             {
                 var match = Regex.Match(input, @"complete\s*task(?:\s*[-:]\s*)?(.+)", RegexOptions.IgnoreCase);
                 if (match.Success)
@@ -255,7 +266,7 @@ namespace chatbot
                 return;
             }
 
-            if (intent == "delete task" || intents["delete task"].Any(syn => input.ToLower().Contains(syn))) // Deletes a task.
+            if (intent == "delete task" || intents["delete task"].Any(syn => input.ToLower().Contains(syn))) // Removes a task from the list.
             {
                 var match = Regex.Match(input, @"delete\s*task(?:\s*[-:]\s*)?(.+)", RegexOptions.IgnoreCase);
                 if (match.Success)
@@ -281,39 +292,39 @@ namespace chatbot
                 return;
             }
 
-            if (intent == "activity log" || intents["activity log"].Any(syn => input.ToLower().Contains(syn))) // Shows activity log.
+            if (intent == "activity log" || intents["activity log"].Any(syn => input.ToLower().Contains(syn))) // Retrieves and displays the activity log.
             {
                 ShowActivityLog();
                 return;
             }
 
-            if (intent == "quiz" || intents["quiz"].Any(syn => input.ToLower().Contains(syn))) // Starts the quiz.
+            if (intent == "quiz" || intents["quiz"].Any(syn => input.ToLower().Contains(syn))) // Initiates the cybersecurity quiz feature.
             {
                 StartQuiz();
                 return;
             }
 
-            if (input.ToLower().Contains("worried") || input.ToLower().Contains("anxious")) // Responds to worried mood.
+            if (input.ToLower().Contains("worried") || input.ToLower().Contains("anxious")) // Provides supportive response for a worried user.
             {
                 AppendText("😟 I can sense you're worried. Cybersecurity can be daunting, but small steps make a big difference. For example, using strong passwords and enabling 2FA can protect your accounts. Try typing 'password' for tips or 'quiz' to test your knowledge!");
             }
-            else if (input.ToLower().Contains("frustrated") || input.ToLower().Contains("angry")) // Responds to frustrated mood.
+            else if (input.ToLower().Contains("frustrated") || input.ToLower().Contains("angry")) // Offers help for a frustrated user.
             {
                 AppendText("😣 Frustration is understandable—cyber threats are tricky! Let’s simplify things. You can learn about avoiding scams or securing your browsing. Type 'scam' or 'privacy' for detailed advice, or use the right panel to manage tasks and stay organized.");
             }
-            else if (input.ToLower().Contains("curious") || input.ToLower().Contains("interested")) // Responds to curious mood.
+            else if (input.ToLower().Contains("curious") || input.ToLower().Contains("interested")) // Encourages a curious user to explore.
             {
                 AppendText("🤔 Curiosity is a great start! Cybersecurity is all about staying one step ahead. Explore topics like phishing scams or VPNs by typing 'scam' or 'privacy', or try the quiz to dive deeper into key concepts!");
             }
 
-            string keyword = keywordResponses.Keys.FirstOrDefault(k => input.ToLower().Contains(k) || input.ToLower().Replace("s", "").Contains(k)); // Detects cybersecurity topics.
+            string keyword = keywordResponses.Keys.FirstOrDefault(k => input.ToLower().Contains(k) || input.ToLower().Replace("s", "").Contains(k)); // Identifies cybersecurity topics with flexible spelling.
             if (!string.IsNullOrEmpty(keyword))
             {
                 lastKeyword = userInterest = keyword;
                 if (!responseIndex.ContainsKey(keyword)) responseIndex[keyword] = 0;
                 var responses = keywordResponses[keyword];
                 var idx = responseIndex[keyword];
-                AppendText(responses[idx]); // Shows the next tip for the topic.
+                AppendText(responses[idx]); // Displays the current tip for the selected topic, cycling through the list.
                 responseIndex[keyword] = (idx + 1) % responses.Count;
                 Log("Keyword response: " + keyword);
                 return;
@@ -322,24 +333,24 @@ namespace chatbot
             if (input == "1" || input.ToLower() == "password safety") keyword = "password";
             else if (input == "2" || input.ToLower() == "phishing scams") keyword = "scam";
             else if (input == "3" || input.ToLower() == "safe browsing") keyword = "privacy";
-            if (!string.IsNullOrEmpty(keyword)) // Handles topic selection by number.
+            if (!string.IsNullOrEmpty(keyword)) // Processes topic selection based on numbered options.
             {
                 AppendText("📘 Topic selected: " + keyword);
                 AppendText(keywordResponses[keyword][0]);
                 return;
             }
 
-            if (input.ToLower() == "exit" || input.ToLower() == "quit") // Exits the app.
+            if (input.ToLower() == "exit" || input.ToLower() == "quit") // Handles the app exit command.
             {
                 AppendText("👋 Logging off... Stay safe, " + userAlias + ".");
-                Application.Current.Shutdown(); // Closes the application.
+                Application.Current.Shutdown(); // Safely terminates the application, closing all windows.
                 return;
             }
 
             AppendText("🤖 Try 'quiz', 'add task <title> [with description ...] [in X days/tomorrow/next week]', 'complete task <title>', 'delete task <title>', 'show tasks', 'activity log', or a keyword like 'password'.");
         } // End ProcessInput
 
-        private void AddTaskFromGUI() // Adds task using the GUI panel.
+        private void AddTaskFromGUI() // Adds a new task using the graphical interface on the right panel.
         {
             string title = TaskTitleTextBox.Text.Trim();
             string desc = TaskDescriptionTextBox.Text.Trim();
@@ -360,7 +371,7 @@ namespace chatbot
             ReminderDatePicker.SelectedDate = null;
         } // End AddTaskFromGUI
 
-        private void CompleteTaskFromGUI() // Marks a task as complete using the GUI.
+        private void CompleteTaskFromGUI() // Marks a selected task as completed through the GUI interface.
         {
             if (TaskListBox.SelectedIndex >= 0)
             {
@@ -376,7 +387,7 @@ namespace chatbot
             }
         } // End CompleteTaskFromGUI
 
-        private void DeleteTaskFromGUI() // Deletes a task using the GUI.
+        private void DeleteTaskFromGUI() // Removes a selected task from the list using the GUI.
         {
             if (TaskListBox.SelectedIndex >= 0)
             {
@@ -392,16 +403,16 @@ namespace chatbot
             }
         } // End DeleteTaskFromGUI
 
-        private void StartQuiz() // Begins the cybersecurity quiz.
+        private void StartQuiz() // Initiates a 10-question cybersecurity quiz to test user knowledge.
         {
-            quizActive = true;
-            quizIndex = 0;
-            quizScore = 0;
-            Log("Quiz started");
-            DisplayQuizQuestion();
+            quizActive = true; // Activates the quiz mode to process answers.
+            quizIndex = 0; // Resets the question index to start from the beginning.
+            quizScore = 0; // Clears the previous score for a new attempt.
+            Log("Quiz started"); // Records the quiz start in the activity log.
+            DisplayQuizQuestion(); // Shows the first question to the user.
         } // End StartQuiz
 
-        private void DisplayQuizQuestion() // Shows the current quiz question.
+        private void DisplayQuizQuestion() // Presents the current quiz question with options to the user.
         {
             if (quizIndex < quizQuestions.Count)
             {
@@ -412,17 +423,17 @@ namespace chatbot
             }
             else
             {
-                quizActive = false;
+                quizActive = false; // Ends the quiz when all questions are answered.
                 string feedback = quizScore >= 8 ? "🏆 Great job! You're a cybersecurity pro!" :
                                  quizScore >= 5 ? "📘 Good effort! Keep learning to stay safe online!" :
                                  "📚 You might want to review cybersecurity basics!";
                 AppendText("🎉 Quiz Done! Score: " + quizScore + "/" + quizQuestions.Count + "\n" + feedback);
                 Log("Quiz completed with score " + quizScore + "/" + quizQuestions.Count);
-                quizIndex = 0;
+                quizIndex = 0; // Resets for future quizzes.
             }
         } // End DisplayQuizQuestion
 
-        private void ProcessQuizAnswer(string input) // Processes quiz answers.
+        private void ProcessQuizAnswer(string input) // Evaluates the user’s answer to the current quiz question.
         {
             var q = quizQuestions[quizIndex];
             if (input.ToLower() == "skip")
@@ -468,7 +479,7 @@ namespace chatbot
             DisplayQuizQuestion();
         } // End ProcessQuizAnswer
 
-        private void ShowActivityLog() // Displays the activity log.
+        private void ShowActivityLog() // Displays the last 10 recorded actions in the chat window.
         {
             AppendText("🧾 Activity Log:");
             if (activityLog.Count == 0)
@@ -484,7 +495,7 @@ namespace chatbot
             }
         } // End ShowActivityLog
 
-        private void ShowTasks() // Shows the current task list.
+        private void ShowTasks() // Lists all current tasks with their details in the chat area.
         {
             if (!tasks.Any())
             {
@@ -500,7 +511,7 @@ namespace chatbot
             }
         } // End ShowTasks
 
-        private void ReminderTimer_Tick(object sender, EventArgs e) // Checks for due reminders every 5 seconds.
+        private void ReminderTimer_Tick(object sender, EventArgs e) // Checks for tasks with reminders due today and notifies the user.
         {
             foreach (var t in tasks)
             {
@@ -512,15 +523,15 @@ namespace chatbot
             }
         } // End ReminderTimer_Tick
 
-        private void AppendText(string text) => ChatHistoryTextBlock.Text += text + "\n\n"; // Adds text to the chat history.
+        private void AppendText(string text) => ChatHistoryTextBlock.Text += text + "\n\n"; // Appends text to the chat history with double line breaks for readability.
 
-        private void Log(string entry) // Logs actions to the activity list.
+        private void Log(string entry) // Adds a timestamped entry to the activity log, limiting it to 10 items.
         {
             activityLog.Insert(0, DateTime.Now.ToString("T") + " - " + entry);
             if (activityLog.Count > 10) activityLog.RemoveAt(activityLog.Count - 1);
         } // End Log
 
-        private void ShowIntro() // Displays the intro ASCII art and welcome.
+        private void ShowIntro() // Presents a custom ASCII art logo followed by a welcome message to set the tone.
         {
             string intro = @"  _____)  _____    _____   )   ___      _____) 
  /        (, /   ) (, /  | (__/_____)  /        
@@ -531,18 +542,18 @@ namespace chatbot
             AppendText("Hi, I'm Grace, your cybersecurity assistant!");
         } // End ShowIntro
 
-        private void PlayStartupSound() // Plays the welcome sound if available.
+        private void PlayStartupSound() // Attempts to play a welcome audio file, handling errors if the file is missing.
         {
             try
             {
                 string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "greeting.wav");
-                SoundPlayer sp = new SoundPlayer(path);
-                sp.Play();
+                SoundPlayer sp = new SoundPlayer(path); // Creates a sound player instance for the specified file.
+                sp.Play(); // Plays the audio file synchronously.
             }
-            catch (Exception ex) { AppendText("[Audio Error] " + ex.Message); }
+            catch (Exception ex) { AppendText("[Audio Error] " + ex.Message); } // Logs any errors, like a missing file, to the chat.
         } // End PlayStartupSound
 
-        private void ShowTopicOptions() // Shows available topics and guide.
+        private void ShowTopicOptions() // Displays available cybersecurity topics and a detailed user guide for interaction.
         {
             AppendText("Select a topic to begin learning:");
             AppendText("1. Password Safety\n2. Phishing Scams\n3. Safe Browsing Tips");
@@ -573,9 +584,9 @@ namespace chatbot
             AppendText("Try a command or use the right panel to get started!");
         } // End ShowTopicOptions
 
-        private void UpdateTaskList() // Updates the task list display.
+        private void UpdateTaskList() // Refreshes the task list display in the GUI to reflect current task status.
         {
-            TaskListBox.Items.Clear();
+            TaskListBox.Items.Clear(); // Clears the existing list to prevent duplicates.
             foreach (var t in tasks)
             {
                 TaskListBox.Items.Add(t.title + " | " + t.description + " | " + (t.completed ? "✅ Done" : "❌ Pending") + " | " + (t.hasReminder ? "Reminder: " + t.reminderDate.ToShortDateString() : "No Reminder"));

@@ -12,3 +12,17 @@ C:\Users\RajeshM\Documents\chatbot_poe\chatbot\obj\Debug\chatbot.csproj.Generate
 C:\Users\RajeshM\Documents\chatbot_poe\chatbot\obj\Debug\chatbot.csproj.CoreCompileInputs.cache
 C:\Users\RajeshM\Documents\chatbot_poe\chatbot\obj\Debug\chatbot.exe
 C:\Users\RajeshM\Documents\chatbot_poe\chatbot\obj\Debug\chatbot.pdb
+C:\Users\RajeshM\Documents\prog6221-poe-ST10259834-Aaryan-Makan\chatbot\bin\Debug\chatbot.exe.config
+C:\Users\RajeshM\Documents\prog6221-poe-ST10259834-Aaryan-Makan\chatbot\bin\Debug\chatbot.exe
+C:\Users\RajeshM\Documents\prog6221-poe-ST10259834-Aaryan-Makan\chatbot\bin\Debug\chatbot.pdb
+C:\Users\RajeshM\Documents\prog6221-poe-ST10259834-Aaryan-Makan\chatbot\obj\Debug\chatbot.csproj.AssemblyReference.cache
+C:\Users\RajeshM\Documents\prog6221-poe-ST10259834-Aaryan-Makan\chatbot\obj\Debug\MainWindow.baml
+C:\Users\RajeshM\Documents\prog6221-poe-ST10259834-Aaryan-Makan\chatbot\obj\Debug\MainWindow.g.cs
+C:\Users\RajeshM\Documents\prog6221-poe-ST10259834-Aaryan-Makan\chatbot\obj\Debug\App.g.cs
+C:\Users\RajeshM\Documents\prog6221-poe-ST10259834-Aaryan-Makan\chatbot\obj\Debug\chatbot_MarkupCompile.cache
+C:\Users\RajeshM\Documents\prog6221-poe-ST10259834-Aaryan-Makan\chatbot\obj\Debug\chatbot.g.resources
+C:\Users\RajeshM\Documents\prog6221-poe-ST10259834-Aaryan-Makan\chatbot\obj\Debug\chatbot.Properties.Resources.resources
+C:\Users\RajeshM\Documents\prog6221-poe-ST10259834-Aaryan-Makan\chatbot\obj\Debug\chatbot.csproj.GenerateResource.cache
+C:\Users\RajeshM\Documents\prog6221-poe-ST10259834-Aaryan-Makan\chatbot\obj\Debug\chatbot.csproj.CoreCompileInputs.cache
+C:\Users\RajeshM\Documents\prog6221-poe-ST10259834-Aaryan-Makan\chatbot\obj\Debug\chatbot.exe
+C:\Users\RajeshM\Documents\prog6221-poe-ST10259834-Aaryan-Makan\chatbot\obj\Debug\chatbot.pdb
