@@ -1,3 +1,6 @@
+IMPORTANT: code presentation and process document is uploaded on arc
+
+
 Welcome to Grace - Cybersecurity Assistant, an interactive desktop application designed to educate users on cybersecurity best practices. This app provides tips on password safety, phishing prevention, and privacy protection, along with a task management system and a quiz feature to test your knowledge. Built using C# and WPF, Grace is a user-friendly tool to enhance your online security awareness.
 
 Prerequisites
